@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1702355997313" clover="3.2.0">
-  <project timestamp="1702355997314" name="All files">
-    <metrics statements="21" coveredstatements="14" conditionals="10" coveredconditionals="3" methods="5" coveredmethods="5" elements="36" coveredelements="22" complexity="0" loc="21" ncloc="21" packages="1" files="1" classes="1"/>
+<coverage generated="1702356832631" clover="3.2.0">
+  <project timestamp="1702356832631" name="All files">
+    <metrics statements="21" coveredstatements="14" conditionals="10" coveredconditionals="4" methods="5" coveredmethods="5" elements="36" coveredelements="23" complexity="0" loc="21" ncloc="21" packages="1" files="1" classes="1"/>
     <file name="testFunction.ts" path="/Users/choo/GithubProjects/CMU_Fall_2023/a3-grpc-api/client/testFunction.ts">
-      <metrics statements="21" coveredstatements="14" conditionals="10" coveredconditionals="3" methods="5" coveredmethods="5"/>
+      <metrics statements="21" coveredstatements="14" conditionals="10" coveredconditionals="4" methods="5" coveredmethods="5"/>
       <line num="1" count="1" type="cond" truecount="0" falsecount="1"/>
       <line num="3" count="1" type="stmt"/>
       <line num="4" count="1" type="cond" truecount="0" falsecount="1"/>
@@ -21,7 +21,7 @@
       <line num="19" count="0" type="stmt"/>
       <line num="22" count="1" type="stmt"/>
       <line num="23" count="1" type="stmt"/>
-      <line num="24" count="1" type="cond" truecount="2" falsecount="2"/>
+      <line num="24" count="2" type="cond" truecount="3" falsecount="1"/>
       <line num="27" count="1" type="cond" truecount="1" falsecount="1"/>
       <line num="28" count="0" type="stmt"/>
       <line num="31" count="1" type="stmt"/>

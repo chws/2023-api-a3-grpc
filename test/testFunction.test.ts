@@ -1,33 +1,47 @@
 import { testFunction } from "../client/testFunction";
 
-// Mock Client
-const mockClient = {
-    GetPost: function ({ postId }, callback) {
-        // Mock response based on postId
-        const mockPost = { id: postId, title: 'Mock Post', text: 'This is a mock post.' };
-        callback(null, { post: mockPost });
-    },
-    GetTopComments: function ({ postId, limit }, callback) {
-        // Mock response based on postId and limit
-        const mockComments = [{ id: 1, content: 'Mock Comment 1' }];
-        callback(null, { comments: mockComments });
-    },
-    ExpandCommentBranch: function ({ commentId, limit }, callback) {
-        // Mock response based on commentId and limit
-        const mockBranches = { children: [{ comment: { id: 2, content: 'Mock Reply', score: 5 } }] };
-        callback(null, { branches: mockBranches });
-    }
-};
+describe('testFunction', () => {
+    let mockApiClient;
 
-describe('RedditClient testFunction', () => {
-    test('should handle valid postId correctly', done => {
-        const validPostId = 1;
-        testFunction(mockClient, validPostId, 1, (err, mostVotedChildComment) => {
-            expect(err).toBeNull();
-            expect(mostVotedChildComment).toBeDefined();
-            expect(mostVotedChildComment.comment).toMatchObject({ id: 2, content: 'Mock Reply', score: 5 });
-            done();
-        });
+    beforeEach(() => {
+        // Reset mockApiClient
+        mockApiClient = {
+            GetPost: jest.fn(),
+            GetTopComments: jest.fn(),
+            ExpandCommentBranch: jest.fn(),
+        };
     });
 
-});
+    it('happy path test', done => {
+        mockApiClient.GetPost.mockImplementation((q, callback) => {
+            callback(null, { post: { id: 1 } }); 
+        });
+        mockApiClient.GetTopComments.mockImplementation((q, callback) => {
+            callback(null, { 
+                comments: [{ comment: { id: 2, score: 10 } }]
+            });
+        });
+        mockApiClient.ExpandCommentBranch.mockImplementation((q, callback) => {
+            callback(null, { 
+                branches: {
+                    parent: { id: 2, score: 10 },
+                    children: [
+                        { comment: { id: 3, score: 5 } },
+                        { comment: { id: 11, score: 50 } } 
+                    ]
+                }
+            });
+        });
+    
+        // Call the testFunction
+        testFunction(mockApiClient, 1, 1, (err, result) => {
+
+            expect(err).toBeNull();
+            expect(result.score).toBe(50); 
+            expect(result.id).toBe(11); 
+            expect(result).not.toBeNull();    
+            done();
+            
+        });
+    });
+ })
