@@ -1,0 +1,213 @@
+syntax = "proto3";
+
+package reddit;
+
+// define rpcs in service
+service Reddit {
+
+  // Create a Post
+  rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){};
+
+  // Upvote or Downvote a Post
+  rpc VotePost(VotePostRequest) returns (VotePostResponse){};
+
+  // Retrieve Post content
+  rpc GetPost(GetPostRequest) returns (GetPostResponse){};
+
+  // Create a Comment
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){};
+
+  // Upvote or Downvote a Comment
+  rpc VoteComment(VoteCommentRequest) returns (VoteCommentResponse){};
+
+  // Retrieve a list of N most upvoted comments under a post
+  rpc GetTopComments(GetTopCommentsRequest) returns (GetTopCommentsResponse){};
+
+  // Expand a comment branch
+  rpc ExpandCommentBranch(ExpandCommentBranchRequest) returns (ExpandCommentBranchResponse){};
+
+  // EXTRA CREDIT
+  // Monitor updates for a post and its comments
+  rpc MonitorUpdates(stream MonitorUpdatesRequest) returns (stream MonitorUpdatesResponse);
+}
+
+// Request to create a post
+message CreatePostRequest {
+  string title = 1; // Title of the post
+  string text = 2; // Text content of the post
+  oneof multimedia {
+    string video_url = 3;
+    string image_url = 4;
+  }
+  string subreddit = 5; // Subreddit name
+  repeated string tags = 6; // Tags for the post
+}
+
+// Response for creating a post
+message CreatePostResponse {
+  int32 post_id = 1; // ID of the created post
+  string message = 2; // Success or error message
+}
+
+// Request to vote on a post
+message VotePostRequest {
+  int32 post_id = 1; // ID of the post
+  bool vote = 2; // if true upvote, else downvote
+}
+
+// Response for voting on a post
+message VotePostResponse {
+  int32 post_id = 1; // ID of the post where vote was attached to
+  string message = 2; // Success or error message
+}
+
+// Request to retrieve post content
+message GetPostRequest {
+  int32 post_id = 1; // ID of the post to retrieve
+}
+
+// Response for retrieving post content
+message GetPostResponse {
+  Post post = 1; // The Post entity
+}
+
+// Request to create a comment
+message CreateCommentRequest {
+  int32 post_id = 1; // ID of the post to comment on
+  string content = 2; // Content of the comment
+}
+
+// Response for creating a comment
+message CreateCommentResponse {
+  int32 comment_id = 1; // ID of the created comment
+  string message = 2; // Success or error message
+}
+
+// Request to vote on a comment
+message VoteCommentRequest {
+  int32 comment_id = 1; // ID of the comment
+  bool vote = 2; // if true upvote, else downvote
+}
+
+// Response for voting on a comment
+message VoteCommentResponse {
+  int32 comment_id = 1; // ID of the comment where vote was attached to
+  string message = 2; // Success or error message
+}
+
+// Request to get top N comments for a post
+message GetTopCommentsRequest {
+  int32 post_id = 1; // ID of the post
+  int32 limit = 2; // Number of top comments to retrieve
+}
+
+// Response for getting top N comments
+message GetTopCommentsResponse {
+  repeated Comment comments = 1; // List of top comments
+}
+
+// Request to expand a comment branch
+message ExpandCommentBranchRequest {
+  int32 comment_id = 1; // ID of the comment to expand
+  int32 limit = 2; // Number of top comments to retrieve for each branch
+}
+
+// Response for expanding a comment branch
+message ExpandCommentBranchResponse {
+  CommentBranch branches = 1; // List of comment branches
+}
+
+// Represents a comment and its top N child comments
+message CommentBranch {
+  Comment parent = 1; // Parent comment data
+  repeated ChildrenComment children = 2; // Top N child comments
+}
+
+message ChildrenComment {
+  Comment comment = 1; // Mid-level comment data
+  repeated Comment leaf = 2; // Top N child comments
+}
+
+// Request for monitoring updates
+message MonitorUpdatesRequest {
+  oneof request_type {
+    int32 post_id = 1; // ID of the post to monitor
+    int32 comment_id = 2; // ID of a comment to add to monitoring
+  }
+}
+
+// Response for monitoring updates
+message MonitorUpdatesResponse {
+  oneof update_type {
+    PostUpdate post_update = 1;
+    CommentUpdate comment_update = 2;
+  }
+}
+
+// Post update information
+message PostUpdate {
+  int32 post_id = 1; // ID of the post
+  int32 new_score = 2; // Updated score of the post
+}
+
+// Comment update information
+message CommentUpdate {
+  int32 comment_id = 1; // ID of the comment
+  int32 new_score = 2; // Updated score of the comment
+}
+
+// User entity
+message User {
+  string user_id = 1; // Human readable user ID
+}
+
+// Post entity
+message Post {
+  int32 id = 1; // id
+  string title = 2; // Title of the post
+  string text = 3; // Text content of the post
+  oneof multimedia {
+    string video_url = 4;
+    string image_url = 5;
+  }
+  int32 author = 6; // Optional author of the post
+  int32 score = 7; // Score of the post, can be negative
+  enum State {
+    NORMAL = 0;
+    LOCKED = 1;
+    HIDDEN = 2;
+  }
+  State state = 8; // State of the post
+  int64 publication_date = 9; // Publication date as timestamp
+  int32 subreddit = 10; // id of the subreddit to which the post belongs which is exactly one
+  repeated string tags = 11;
+}
+
+// Comment entity
+message Comment {
+  int32 id = 1; // id
+  int32 author = 2; // Author of the comment
+  int32 score = 3; // Score of the comment, similar to Post
+  enum Status {
+    NORMAL = 0;
+    HIDDEN = 1;
+  }
+  Status status = 4; // Status of the comment
+  int64 publication_date = 5; // Publication date as timestamp
+  string content = 6; // Content of the comment
+  int32 parent_id = 7; // 
+  int32 post_id = 8; // ID of the post where the comment is attached to
+}
+
+// Subreddit entity
+message Subreddit {
+  int32 id = 1; // id
+  string name = 2; // Human-readable name
+  enum Visibility {
+    PUBLIC = 0;
+    PRIVATE = 1;
+    HIDDEN = 2;
+  }
+  Visibility visibility = 3; // Visibility status
+  repeated string tags = 4; // Set of tags attached to posts
+}
