@@ -13,13 +13,14 @@ export function testFunction(client, postId, limit = 1, callback) {
             }
 
             console.log("response", result.comments)
-            client.ExpandCommentBranch({ commentId: response.comments[0].comment.id, limit: 1 }, (err, res) => {
+            client.ExpandCommentBranch({ commentId: result.comments[0].id, limit: 1 }, (err, res) => {
                 if (err) {
                     console.error(err);
                     return;
                 }
 
-                const mostVotedChildren = res.commentBranch.replies.reduce((topReply, currentReply) => {
+                console.log(res);
+                const mostVotedChildren = res.branches.children.reduce((topReply, currentReply) => {
                     return (!topReply || currentReply.comment.score > topReply.comment.score) ? currentReply : topReply;
                 }, null);
 

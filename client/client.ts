@@ -4,6 +4,7 @@ import { ProtoGrpcType } from '../proto/reddit.ts';
 import { fileURLToPath } from 'url';
 import path from 'path'
 import { dirname } from 'path';
+import { testFunction } from './testFunction.ts';
 
 class RedditClient {
   private client: any;
@@ -21,10 +22,10 @@ class RedditClient {
         `0.0.0.0:${9000}`, grpc.credentials.createInsecure()
     )
     const redditPackage = grpcObj.reddit;
-
     }
 
   runSequence() {
+    testFunction(this.client, 1, 1, (error, result) => {console.log(error, result)});
     // Example data for each operation
     const createPostData = {
         title: "Talk about Harry Potter",

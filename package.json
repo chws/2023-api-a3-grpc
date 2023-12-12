@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node --loader ts-node/esm ./server/server.ts",
     "client": "node --loader ts-node/esm ./client/client.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "compile": "tsc",
     "build": "npm run compile && node ./out/server/server.js"
   },
